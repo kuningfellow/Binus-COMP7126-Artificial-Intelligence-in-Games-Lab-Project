@@ -3,69 +3,91 @@ import java.util.Scanner;
 
 // Class concered with the dynamics of the game state
 public class GameEngine {
-    GameState state;
+    private GameState state;
 
-    // Class to move enemies
-    class AutoMove implements Runnable {
-        int character;
-        long pendingSleep;
-        public long startTime;
-        volatile boolean dead = false;
-
-        // character being moved, start time of thread
-        AutoMove(int character, long startTime, long pendingSleep) {
-            this.character = character;
-            this.startTime = startTime;
-            this.pendingSleep = pendingSleep;
+    // Class for Character (player and enemies)
+    private class Character {
+        int id;
+        long timePhase;
+        AutoMove autoMove = null;
+        Character(int id) {
+            this.id = id;
         }
-        public void kill() {
-            this.dead = true;
-        }
-        public void run() {
-            try {
-                Thread.sleep(pendingSleep);
-            } catch (Exception e) {
-                e.printStackTrace();
+        void pauseAutoMove() {
+            if (this.autoMove != null) {
+                long curT = System.currentTimeMillis();
+                this.autoMove.kill();
+                this.timePhase = ( this.timePhase + curT - this.autoMove.startTime ) % state.enemyMoveCooldown;
+                this.autoMove = null;
             }
-            while (!dead) {
-                synchronized(state) {
-                    /**
-                        Do some automatic character movement
-                     */
-                    state.notify();
+        }
+        void resumeAutoMove() {
+            if (this.autoMove == null) {
+                long curT = System.currentTimeMillis();
+                this.autoMove = new AutoMove(curT, state.enemyMoveCooldown - this.timePhase);
+                Thread t = new Thread(this.autoMove);
+                t.start();
+            }
+        }
+        class AutoMove implements Runnable {
+            long startTime;
+            long pendingSleep;
+            volatile boolean dead = false;
+
+            // character being moved, start time of thread
+            AutoMove(long startTime, long pendingSleep) {
+                this.startTime = startTime;
+                this.pendingSleep = pendingSleep;
+            }
+            public void kill() {
+                this.dead = true;
+            }
+            public void run() {
+                try {
+                    Thread.sleep(pendingSleep);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                while (!dead) {
+                    synchronized(state) {
+                        /**
+                            Do some automatic character movement
+                        */
+                        state.notify();
+                        try {
+                            state.wait();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    // Wait for a period before an enemy can move
                     try {
-                        state.wait();
+                        Thread.sleep(state.enemyMoveCooldown);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-
-                // Wait for a period before an enemy can move
-                try {
-                    Thread.sleep(state.enemyMoveCooldown);
-                } catch (Exception e) {
-                    e.printStackTrace();
+            }
+        }
+        // Class to move player
+        class Move implements Runnable {
+            public void run() {
+                synchronized(state) {
+                    /**
+                        Do some player movement
+                    */
+                    state.notify();
                 }
             }
         }
     }
 
-    // Class to move player
-    class Move implements Runnable {
-        public void run() {
-            synchronized(state) {
-                /**
-                    Do some player movement
-                 */
-                state.notify();
-            }
-        }
-    }
 
     // Class for handling a single gameplay timeline (starting, pausing, resuming, etc)
     class Session {
-        Vector<AutoMove> T = new Vector<AutoMove>();        // Thread Vector for enemy motion
-        Vector<Integer> P = new Vector<Integer>();          // Vector for remaining time before moving
+        Vector<Character> enemies = new Vector<Character>();
+        Character player;
         // A thread to ensure locks are released regularly
         class Release implements Runnable {
             public void run() {
@@ -82,33 +104,27 @@ public class GameEngine {
             }
         }
         Session() {
+            player = new Character(0);
+            for (int i = 1; i <= state.enemyCount; i++) {
+                enemies.add(new Character(i));
+            }
             Thread r = new Thread(new Release());
             r.start();
         }
-        void pause() {
-            Vector<AutoMove> tmp = new Vector<AutoMove>();
-            long curT = System.currentTimeMillis();
-            for (int i = 0; i < state.enemyCount; i++) {
-                T.get(i).kill();
-                P.set(i, (int) ( (P.get(i)+curT-T.get(i).startTime) % state.enemyMoveCooldown) );
-            }
-            T.clear();
-            System.out.println("paused");
-        }
         void start() {
-            for (int i = 0; i < state.enemyCount; i++) {
-                P.add(0);
-            }
             resume();
         }
-        void resume() {
-            long curT = System.currentTimeMillis();
+        // stops all AutoMoves;
+        void pause() {
             for (int i = 0; i < state.enemyCount; i++) {
-                T.add(new AutoMove(i, curT, state.enemyMoveCooldown-P.get(i)) );
-                Thread t = new Thread(T.get(i));
-                t.start();
+                enemies.get(i).pauseAutoMove();
             }
-            System.out.println("resumed");
+        }
+        // runs all AutoMoves
+        void resume() {
+            for (int i = 0; i < state.enemyCount; i++) {
+                enemies.get(i).resumeAutoMove();
+            }
         }
     }
 
@@ -125,7 +141,7 @@ public class GameEngine {
             } else if (str.equals("r")) {
                 session.resume();
             } else {
-                Thread m = new Thread(new Move());
+                Thread m = new Thread(session.player.new Move());
                 m.start();
             }
             System.out.println(state.position[1][0]);
