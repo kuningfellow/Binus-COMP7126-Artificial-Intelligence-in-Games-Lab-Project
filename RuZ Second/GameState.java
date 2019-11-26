@@ -6,12 +6,14 @@ import java.util.Collections;
 class Maze {
     // 0 based indexing
     int mazeSize, tileSize;
-    int[][] cell;
-    int[][] corners;
+    int[][] cell;           // 0 if wall, 1 if floor
+    int[][] visitor;        // stores bitmask of characters in a cell
+    int[][] corners;        // stores 4 corners of the maze
     Maze(int mazeSize, int tileSize) {
         this.mazeSize = mazeSize;
         this.tileSize = tileSize;
         cell = new int[mazeSize][mazeSize];
+        visitor = new int[mazeSize][mazeSize];
         corners = new int[4][2];
         corners[0][0] = 1;
         corners[0][1] = 1;
@@ -52,7 +54,9 @@ class Maze {
         int[][] visit = new int[this.mazeSize][this.mazeSize];
         for (int i = 0; i < this.mazeSize; i++) {
             for (int j = 0; j < this.mazeSize; j++) {
-                if (this.cell[i][j] == 3) {
+                if (this.visitor[i][j] == 1) {
+                    System.out.printf("P");
+                } else if (this.visitor[i][j] > 0) {
                     System.out.printf("O");
                 } else if (this.cell[i][j] == 1) {
                     System.out.printf(" ");
@@ -63,11 +67,12 @@ class Maze {
             System.out.println("");
         }
     }
-    void enterCell(int x, int y) {
-        this.cell[x][y] |= 2;
+    void enterCell(int id, int x, int y) {
+        this.visitor[x][y] |= 1 << id;
     }
-    void leaveCell(int x, int y) {
-        this.cell[x][y] &= 1;
+    void leaveCell(int id, int x, int y) {
+        this.visitor[x][y] |= 1 << id;
+        this.visitor[x][y] ^= 1 << id;
     }
     List<Integer> getBranchingOrder() {
         Integer[] arr = {0, 1, 2, 3};
@@ -160,9 +165,9 @@ public class GameState {
             } else {
                 this.dir = (this.dir + 2) % 4;
             }
-            maze.leaveCell(this.pos.X, this.pos.Y);
+            maze.leaveCell(this.id, this.pos.X, this.pos.Y);
             this.pos.move(this.dir);
-            maze.enterCell(this.pos.X, this.pos.Y);
+            maze.enterCell(this.id, this.pos.X, this.pos.Y);
         }
     }
     Vector<Character> characters = new Vector<Character>();
