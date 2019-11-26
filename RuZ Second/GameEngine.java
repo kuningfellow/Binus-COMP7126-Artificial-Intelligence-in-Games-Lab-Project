@@ -6,25 +6,24 @@ public class GameEngine {
     private GameState state;
 
     // Class for Character (player and enemies)
-    private class Character {
+    private class CharacterMovement {
         int id;
-        long timePhase;
         AutoMove autoMove = null;
-        Character(int id) {
+        CharacterMovement(int id) {
             this.id = id;
         }
         void pauseAutoMove() {
             if (this.autoMove != null) {
                 long curT = System.currentTimeMillis();
                 this.autoMove.kill();
-                this.timePhase = ( this.timePhase + curT - this.autoMove.startTime ) % state.enemyMoveCooldown;
+                state.characters.get(id).timePhase = ( state.characters.get(id).timePhase + curT - this.autoMove.startTime ) % state.enemyMoveCooldown;
                 this.autoMove = null;
             }
         }
         void resumeAutoMove() {
             if (this.autoMove == null) {
                 long curT = System.currentTimeMillis();
-                this.autoMove = new AutoMove(curT, state.enemyMoveCooldown - this.timePhase);
+                this.autoMove = new AutoMove(curT, state.enemyMoveCooldown - state.characters.get(id).timePhase);
                 Thread t = new Thread(this.autoMove);
                 t.start();
             }
@@ -53,6 +52,7 @@ public class GameEngine {
                         /**
                             Do some automatic character movement
                         */
+                        state.characters.get(id).autoMove();
                         state.notify();
                         try {
                             state.wait();
@@ -86,13 +86,14 @@ public class GameEngine {
 
     // Class for handling a single gameplay timeline (starting, pausing, resuming, etc)
     class Session {
-        Vector<Character> enemies = new Vector<Character>();
-        Character player;
+        Vector<CharacterMovement> enemies = new Vector<CharacterMovement>();
+        CharacterMovement player;
         // A thread to ensure locks are released regularly
         class Release implements Runnable {
             public void run() {
                 while (true) {
                     synchronized(state) {
+                        state.maze.print();
                         state.notify();
                         try {
                             state.wait();
@@ -104,9 +105,9 @@ public class GameEngine {
             }
         }
         Session() {
-            player = new Character(0);
+            player = new CharacterMovement(0);
             for (int i = 1; i <= state.enemyCount; i++) {
-                enemies.add(new Character(i));
+                enemies.add(new CharacterMovement(i));
             }
             Thread r = new Thread(new Release());
             r.start();
@@ -144,7 +145,7 @@ public class GameEngine {
                 Thread m = new Thread(session.player.new Move());
                 m.start();
             }
-            System.out.println(state.position[1][0]);
+            // System.out.println(state.position[1][0]);
         }
     }
 
