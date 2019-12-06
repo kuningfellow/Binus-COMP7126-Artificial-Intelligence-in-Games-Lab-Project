@@ -11,9 +11,6 @@ class ScoredKill implements Runnable {
     }
     public void run() {
         synchronized(state) {
-            /**
-                Do some player movement
-            */
             scorer.score += scorer.killScore;
             state.notify();
         }
