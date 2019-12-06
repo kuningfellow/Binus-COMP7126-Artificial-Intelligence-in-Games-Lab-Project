@@ -25,7 +25,7 @@ class AutoMove implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        while (!dead) {
+        while (!dead && !state.lost) {
             synchronized(state) {
                 /**
                     Do some automatic character movement

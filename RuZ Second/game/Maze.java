@@ -4,13 +4,17 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
 
+import game.GameState;
+
 public class Maze {
+    GameState state;
     // 0 based indexing
     int mazeSize, tileSize;
     int[][] cell;           // 0 if wall, 1 if floor
     int[][] visitor;        // stores bitmask of characters in a cell
-    int[][] corners;        // stores 4 corners of the maze
-    Maze(int mazeSize, int tileSize) {
+    public int[][] corners;        // stores 4 corners of the maze
+    Maze(GameState state, int mazeSize, int tileSize) {
+        this.state = state;
         this.mazeSize = mazeSize;
         this.tileSize = tileSize;
         cell = new int[mazeSize][mazeSize];
@@ -70,10 +74,26 @@ public class Maze {
     }
     public void enterCell(int id, int x, int y) {
         this.visitor[x][y] |= 1 << id;
+        for (int i = 0; i <= state.enemyCount; i++) {
+            if (i == id) continue;
+            if ((this.visitor[x][y] & (1 << i)) > 0) {
+                state.characters.get(i).kill(id);
+            }
+        }
     }
     public void leaveCell(int id, int x, int y) {
         this.visitor[x][y] |= 1 << id;
         this.visitor[x][y] ^= 1 << id;
+    }
+    public int getRandomCorner() {
+        List<Integer> rand = getBranchingOrder();
+        for (int i = 0; i < rand.size(); i++) {
+            int ret = rand.get(i);
+            if (visitor[ corners[ret][0] ][ corners[ret][1] ] == 0) {
+                return ret;
+            }
+        }
+        return -1;
     }
     List<Integer> getBranchingOrder() {
         Integer[] arr = {0, 1, 2, 3};

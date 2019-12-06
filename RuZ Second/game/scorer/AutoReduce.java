@@ -24,7 +24,7 @@ class AutoReduce implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        while (!dead) {
+        while (!dead && !state.lost) {
             synchronized(state) {
                 scorer.goalScore = Math.max(0, scorer.goalScore - scorer.goalScoreReductionRate);
                 state.notify();

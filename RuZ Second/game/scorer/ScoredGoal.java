@@ -10,9 +10,11 @@ class ScoredGoal implements Runnable {
         this.scorer = scorer;
     }
     public void run() {
-        synchronized(state) {
-            scorer.score += scorer.goalScore;
-            state.notify();
+        if (!state.lost) {
+            synchronized(state) {
+                scorer.score += scorer.goalScore;
+                state.notify();
+            }
         }
     }
 }

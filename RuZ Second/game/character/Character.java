@@ -47,6 +47,25 @@ public class Character {
         }
     }
 
+    public void kill(int killer) {
+        // player is killed
+        if (this.id == 0) {
+            this.state.maze.leaveCell(this.id, this.pos.X, this.pos.Y);
+            this.state.lost = true;
+        } else {
+            // player is the killer
+            if (killer == 0) {
+                this.state.scorer.scoredKill();
+            }
+            pauseAutoMove();
+            this.state.maze.leaveCell(this.id, this.pos.X, this.pos.Y);
+            int corner = this.state.maze.getRandomCorner();
+            this.pos.X = this.state.maze.corners[corner][0];
+            this.pos.Y = this.state.maze.corners[corner][1];
+            this.state.maze.enterCell(this.id, this.pos.X, this.pos.Y);
+            resumeAutoMove();
+        }
+    }
     public void pauseAutoMove() {
         if (this.autoMove != null) {
             long curT = System.currentTimeMillis();

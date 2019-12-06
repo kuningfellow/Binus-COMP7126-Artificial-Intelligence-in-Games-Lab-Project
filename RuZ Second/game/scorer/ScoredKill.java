@@ -10,9 +10,11 @@ class ScoredKill implements Runnable {
         this.scorer = scorer;
     }
     public void run() {
-        synchronized(state) {
-            scorer.score += scorer.killScore;
-            state.notify();
+        if (!state.lost) {
+            synchronized(state) {
+                scorer.score += scorer.killScore;
+                state.notify();
+            }
         }
     }
 }

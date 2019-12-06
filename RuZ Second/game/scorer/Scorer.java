@@ -44,4 +44,7 @@ public class Scorer {
             t.start();
         }
     }
+    public int getScore() {
+        return score;
+    }
 }
