@@ -34,4 +34,11 @@ public class GameState {
         lost = false;
         paused = false;
     }
+    public boolean gameOver() {
+        if (lost || scorer.goalFounder != -1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

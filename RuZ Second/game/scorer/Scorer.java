@@ -6,6 +6,7 @@ public class Scorer {
     GameState state;
     int score;
     int goalScore, goalScoreReductionRate;
+    public int goalFounder;
     final int goalScoreReductionPeriod = 1000;
     int killScore;
     long timePhase;
@@ -14,6 +15,7 @@ public class Scorer {
         score = 0;
         timePhase = 0;
         autoReduce = null;
+        goalFounder = -1;
         this.state = state;
         this.goalScore = goalScore;
         this.goalScoreReductionRate = goalScoreReductionRate;

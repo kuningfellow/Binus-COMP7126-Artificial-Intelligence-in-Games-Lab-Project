@@ -10,7 +10,7 @@ class ScoredKill implements Runnable {
         this.scorer = scorer;
     }
     public void run() {
-        if (!state.lost) {
+        if (!state.gameOver()) {
             synchronized(state) {
                 scorer.score += scorer.killScore;
                 state.notify();

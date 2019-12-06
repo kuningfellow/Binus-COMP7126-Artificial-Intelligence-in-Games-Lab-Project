@@ -74,10 +74,17 @@ public class Maze {
     }
     public void enterCell(int id, int x, int y) {
         this.visitor[x][y] |= 1 << id;
-        for (int i = 0; i <= state.enemyCount; i++) {
-            if (i == id) continue;
-            if ((this.visitor[x][y] & (1 << i)) > 0) {
-                state.characters.get(i).kill(id);
+        if (x == this.mazeSize/2 && y == this.mazeSize/2) {
+            state.scorer.goalFounder = id;
+            if (id == 0) {
+                state.scorer.scoredGoal();
+            }
+        } else {
+            for (int i = 0; i <= state.enemyCount; i++) {
+                if (i == id) continue;
+                if ((this.visitor[x][y] & (1 << i)) > 0) {
+                    state.characters.get(i).kill(id);
+                }
             }
         }
     }

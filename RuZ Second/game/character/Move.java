@@ -12,7 +12,7 @@ class Move implements Runnable {
         this.dir = dir;
     }
     public void run() {
-        if (!state.lost) {
+        if (!state.gameOver()) {
             synchronized(state) {
                 /**
                     Do some player movement
