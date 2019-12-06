@@ -64,7 +64,9 @@ public class Character {
         }
     }
     public void manualMove(int dir) {
-        Thread t = new Thread(new Move(this.state, this, dir));
-        t.start();
+        if (this.state.paused == false) {
+            Thread t = new Thread(new Move(this.state, this, dir));
+            t.start();
+        }
     }
 }
