@@ -1,9 +1,10 @@
-import java.util.Vector;
+package game;
+
 import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
 
-class Maze {
+public class Maze {
     // 0 based indexing
     int mazeSize, tileSize;
     int[][] cell;           // 0 if wall, 1 if floor
@@ -32,7 +33,7 @@ class Maze {
             return false;
         }
     }
-    boolean isFloor(int x, int y) {
+    public boolean isFloor(int x, int y) {
         if (!insideMaze(x, y)) {
             return false;
         } else if ((this.cell[x][y] & 1) == 1) {
@@ -67,10 +68,10 @@ class Maze {
             System.out.println("");
         }
     }
-    void enterCell(int id, int x, int y) {
+    public void enterCell(int id, int x, int y) {
         this.visitor[x][y] |= 1 << id;
     }
-    void leaveCell(int id, int x, int y) {
+    public void leaveCell(int id, int x, int y) {
         this.visitor[x][y] |= 1 << id;
         this.visitor[x][y] ^= 1 << id;
     }
@@ -114,90 +115,5 @@ class Maze {
     }
     void generate() {
         dfs(mazeSize/2, mazeSize/2, 0);     // Start at center of maze (as requested)
-    }
-}
-
-
-// Class concerned with the state of the game
-public class GameState {
-    Maze maze;
-    class Character {
-        int id;
-        int dir;
-        class Position {
-            int X, Y;
-            Position(Position P) {
-                this.X = P.X;
-                this.Y = P.Y;
-            }
-            Position(int X, int Y) {
-                this.X = X;
-                this.Y = Y;
-            }
-            void move(int dir) {
-                if (dir == 0) this.X++;
-                else if (dir == 1) this.Y++;
-                else if (dir == 2) this.X--;
-                else if (dir == 3) this.Y--;
-            }
-        }
-        Position pos;
-        long timePhase;
-        Character(int id, int x, int y) {
-            this.id = id;
-            this.pos = new Position(x, y);
-        }
-        boolean canMove(int dir) {
-            Position pos = new Position(this.pos);
-            pos.move(dir);
-            if (maze.isFloor(pos.X, pos.Y)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        void autoMove() {
-            if (canMove((dir + 1) % 4)) {
-                this.dir = (this.dir + 1) % 4;
-            } else if (canMove(dir)) {
-            } else if (canMove((dir + 3) % 4)) {
-                this.dir = (this.dir + 3) % 4;
-            } else {
-                this.dir = (this.dir + 2) % 4;
-            }
-            maze.leaveCell(this.id, this.pos.X, this.pos.Y);
-            this.pos.move(this.dir);
-            maze.enterCell(this.id, this.pos.X, this.pos.Y);
-        }
-    }
-    Vector<Character> characters = new Vector<Character>();
-    final int enemyCount = 3;
-    int score;
-    int goalScore, goalScoreReductionRate;
-    int enemyMoveCooldown, killScore;
-    GameState(int x) {
-        if (x == 1) {           // Easy
-            maze = new Maze(15, 40);
-            enemyMoveCooldown = 600;
-            goalScore = 100;
-            goalScoreReductionRate = 3;
-            killScore = 20;
-        } else if (x == 2) {    // Medium
-            maze = new Maze(27, 22);
-            enemyMoveCooldown = 400;
-            goalScore = 250;
-            goalScoreReductionRate = 4;
-            killScore = 40;
-        } else if (x == 3) {    // Hard
-            maze = new Maze(35, 17);
-            enemyMoveCooldown = 200;
-            goalScore = 800;
-            goalScoreReductionRate = 5;
-            killScore = 50;
-        }
-        score = 0;
-        for (int i = 0; i <= enemyCount; i++) {
-            characters.add(new Character(i, maze.corners[i][0], maze.corners[i][1]));
-        }
     }
 }
