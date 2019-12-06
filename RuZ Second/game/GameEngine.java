@@ -36,12 +36,14 @@ public class GameEngine {
         }
         // stops all AutoMoves;
         void pause() {
+            state.paused = true;
             for (int i = 1; i < 4; i++) {
                 state.characters.get(i).pauseAutoMove();
             }
         }
         // runs all AutoMoves
         void resume() {
+            state.paused = false;
             for (int i = 1; i < 4; i++) {
                 state.characters.get(i).resumeAutoMove();
             }

@@ -1,0 +1,47 @@
+package game.scorer;
+
+import game.GameState;
+
+public class Scorer {
+    GameState state;
+    int score;
+    int goalScore, goalScoreReductionRate;
+    final int goalScoreReductionPeriod = 1000;
+    int killScore;
+    long timePhase;
+    AutoReduce autoReduce;
+    public Scorer(GameState state, int goalScore, int goalScoreReductionRate, int killScore) {
+        score = 0;
+        timePhase = 0;
+        autoReduce = null;
+        this.state = state;
+        this.goalScore = goalScore;
+        this.goalScoreReductionRate = goalScoreReductionRate;
+        this.killScore = killScore;
+    }
+    public void scoredKill() {
+        Thread t = new Thread(new ScoredKill(this.state, this));
+        t.start();
+    }
+    public void scoredGoal() {
+        Thread t = new Thread(new ScoredGoal(this.state, this));
+        t.start();
+    }
+
+    public void pauseAutoReduce() {
+        if (this.autoReduce != null) {
+            long curT = System.currentTimeMillis();
+            this.autoReduce.kill();
+            this.timePhase = ( this.timePhase + curT - this.autoReduce.startTime ) % goalScoreReductionPeriod;
+            this.autoReduce = null;
+        }
+    }
+    public void resumeAutoReduce() {
+        if (this.autoReduce == null) {
+            long curT = System.currentTimeMillis();
+            this.autoReduce = new AutoReduce(this.state, this, curT, goalScoreReductionPeriod - this.timePhase);
+            Thread t = new Thread(this.autoReduce);
+            t.start();
+        }
+    }
+}
