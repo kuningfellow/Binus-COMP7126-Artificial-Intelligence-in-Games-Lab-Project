@@ -7,8 +7,6 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import java.io.File;
-
 import game.session.Session;
 
 // Class to display logo
