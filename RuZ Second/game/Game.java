@@ -14,8 +14,8 @@ import game.menu.Menu;
 public class Game implements Runnable {
     public int option;     // -1 = menu, 0 = game over, [1-3] = difficulty
     public JFrame frame;
-    public Menu menu;
-    public Session gameSession;
+    Menu menu;
+    Session gameSession;
 
     private Session newGameSession(int difficulty) {
         return new Session(this, new State(difficulty));

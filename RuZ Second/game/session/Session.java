@@ -19,10 +19,11 @@ import game.Game;
 
 // Class for handling a single gameplay session (starting, pausing, resuming, event handling, painting)
 public class Session extends JPanel implements Runnable, KeyListener {
-    public Game game;
+    Game game;
     public State state;
     Screen screen;
     JPanel panel;
+    Logo logo;
     Info info;
     PauseButton pauseButton;
 
@@ -31,9 +32,10 @@ public class Session extends JPanel implements Runnable, KeyListener {
         this.game = game;
         this.state = state;
         this.screen = new Screen(this);
+        this.panel = new JPanel();
+        this.logo = new Logo(this, 70);
         this.info = new Info(this);
         this.pauseButton= new PauseButton(this);
-        this.panel = new JPanel();
         
         this.game.frame.setSize(state.maze.size * state.maze.tileSize + 230, state.maze.size * state.maze.tileSize + this.game.frame.getInsets().top);
 
@@ -41,12 +43,16 @@ public class Session extends JPanel implements Runnable, KeyListener {
         panel.setLayout(new GridBagLayout());
         this.setLayout(new GridBagLayout());
 
+        // add logo to side panel
+        c.gridx = 0; c.gridy = 0; c.ipadx = logo.width; c.ipady = logo.getLogoHeight() + 10;
+        panel.add(logo, c);
+
         // add info to side panel
-        c.gridx = 0; c.gridy = 0; c.ipadx = 230; c.ipady = state.maze.size * state.maze.tileSize - 50;
+        c.gridx = 0; c.gridy = 1; c.ipadx = 230; c.ipady = state.maze.size * state.maze.tileSize - logo.getLogoHeight() - 100;
         panel.add(info, c);
 
         // add pause button to side panel
-        c.gridy = 1; c.ipadx = 0; c.ipady = 200;
+        c.gridy = 2; c.ipadx = 0; c.ipady = 50;
         panel.add(pauseButton, c);
 
         // add game screen to session panel
@@ -71,6 +77,7 @@ public class Session extends JPanel implements Runnable, KeyListener {
             synchronized(game) {
                 synchronized(state) {
                     state.notify();
+                    // make sure if player scores goal, the goal thread completes
                     if (state.playerKilled ||
                         (
                             state.scorer.goalFounder != -1 && 

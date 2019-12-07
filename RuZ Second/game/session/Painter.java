@@ -13,6 +13,7 @@ class Painter implements Runnable {
             // Repaint session JPanel
             session.screen.repaint();
             session.info.repaint();
+            session.logo.repaint();
 
             if (session.state.gameOver()) {
                 // Kill thread if game over

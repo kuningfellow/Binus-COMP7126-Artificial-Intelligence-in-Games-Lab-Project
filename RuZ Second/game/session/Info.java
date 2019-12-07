@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 
 import game.session.Session;
 
-// Class for handling a single gameplay session (starting, pausing, resuming, event handling, painting)
+// Class for showing information on game session
 public class Info extends JPanel {
     Session session;
     public Info(Session session) {
@@ -22,7 +22,7 @@ public class Info extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         Font font = new Font ("Roboto", Font.PLAIN, 22);
-        int paddingT = session.game.frame.getInsets().top;
+        int paddingT = 20;
         int paddingL = 20;
         int dist = 50;
         g.setFont(font);

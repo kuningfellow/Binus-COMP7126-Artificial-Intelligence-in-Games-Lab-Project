@@ -20,7 +20,6 @@ public class Menu extends JPanel implements KeyListener {
     Scanner in = new Scanner(System.in);
     public Menu(Game game) {
         this.game = game;
-        this.addKeyListener(this);
     }
 
     private void initialize() {
