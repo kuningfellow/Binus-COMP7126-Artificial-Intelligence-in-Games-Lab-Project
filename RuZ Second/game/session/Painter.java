@@ -2,9 +2,8 @@ package game.session;
 
 import game.session.Session;
 
-// A thread to paint session panel on a timer
+// A thread to paint session on a timer
 class Painter implements Runnable {
-    int num = 0;
     Session session;
     Painter(Session session) {
         this.session = session;
@@ -12,7 +11,9 @@ class Painter implements Runnable {
     public void run() {
         while (true) {
             // Repaint session JPanel
-            session.repaint();
+            session.screen.repaint();
+            session.info.repaint();
+
             if (session.state.gameOver()) {
                 // Kill thread if game over
                 break;

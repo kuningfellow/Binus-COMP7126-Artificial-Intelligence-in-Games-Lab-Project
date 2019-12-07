@@ -4,7 +4,6 @@ import game.session.Session;
 
 // A thread to ensure locks are released regularly
 class Releaser implements Runnable {
-    int num = 0;
     Session session;
     Releaser(Session session) {
         this.session = session;

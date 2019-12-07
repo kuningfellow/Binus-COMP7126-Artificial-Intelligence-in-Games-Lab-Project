@@ -1,11 +1,17 @@
 package game.session;
 
+import java.awt.Font;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import game.state.State;
@@ -13,21 +19,50 @@ import game.Game;
 
 // Class for handling a single gameplay session (starting, pausing, resuming, event handling, painting)
 public class Session extends JPanel implements Runnable, KeyListener {
-    /**
-        TODO buat tampilan game
-     */
     public Game game;
     public State state;
+    Screen screen;
+    JPanel panel;
+    Info info;
+    PauseButton pauseButton;
+
     public Session(Game game, State state) {
+        this.addKeyListener(this);
         this.game = game;
         this.state = state;
+        this.screen = new Screen(this);
+        this.info = new Info(this);
+        this.pauseButton= new PauseButton(this);
+        this.panel = new JPanel();
+        
+        this.game.frame.setSize(state.maze.size * state.maze.tileSize + 230, state.maze.size * state.maze.tileSize + this.game.frame.getInsets().top);
+
+        GridBagConstraints c = new GridBagConstraints();
+        panel.setLayout(new GridBagLayout());
+        this.setLayout(new GridBagLayout());
+
+        // add info to side panel
+        c.gridx = 0; c.gridy = 0; c.ipadx = 230; c.ipady = state.maze.size * state.maze.tileSize - 50;
+        panel.add(info, c);
+
+        // add pause button to side panel
+        c.gridy = 1; c.ipadx = 0; c.ipady = 200;
+        panel.add(pauseButton, c);
+
+        // add game screen to session panel
+        c.gridx = 0; c.gridy = 0; c.ipadx = c.ipady = state.maze.size * state.maze.tileSize;
+        this.add(screen, c);
+
+        // add side panel to session panel
+        c.gridx = 1; c.ipadx = c.ipady = 0;
+        this.add(panel, c);
+    
         Thread r = new Thread(new Releaser(this));
         Thread p = new Thread(new Painter(this));
         r.start();
         p.start();
         Thread t = new Thread(this);
         t.start();
-        this.game.frame.setSize(state.maze.size * state.maze.tileSize + 200, state.maze.size * state.maze.tileSize + this.game.frame.getInsets().top);
     }
 
     // Thread to signal parent component when game is over
@@ -77,28 +112,6 @@ public class Session extends JPanel implements Runnable, KeyListener {
     private void initialize() {
         setPreferredSize(new Dimension(800, 800));
         setBackground(Color.cyan);
-    }
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        for (int i = 0; i < state.maze.size; i++) {
-            for (int j = 0; j < state.maze.size; j++) {
-                String color = state.maze.getTileColor(i, j);
-                if (color.equals("player")) {
-                    g.setColor(new Color(0, 0, 255));
-                } else if (color.equals("enemy")) {
-                    g.setColor(new Color(255, 0, 0));
-                } else if (color.equals("goal")) {
-                    g.setColor(new Color(0, 255, 0));
-                } else if (color.equals("floor")) {
-                    g.setColor(new Color(255, 255, 255));
-                } else if (color.equals("wall")) {
-                    g.setColor(new Color(0, 0, 0));
-                }
-                g.fillRect(j*state.maze.tileSize, i*state.maze.tileSize, state.maze.tileSize, state.maze.tileSize);
-            }
-        }
-        g.drawString("" + state.scorer.treasureValue(), state.maze.size * state.maze.tileSize + 20, 150);
     }
 
     @Override
