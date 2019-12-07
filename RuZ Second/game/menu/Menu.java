@@ -11,7 +11,11 @@ import javax.swing.JPanel;
 
 import game.Game;
 
+// Class for game menu
 public class Menu extends JPanel implements KeyListener {
+    /**
+        TODO buat tampilan menu
+     */
     Game game;
     Scanner in = new Scanner(System.in);
     public Menu(Game game) {

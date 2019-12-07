@@ -8,7 +8,7 @@ import game.maze.Maze;
 
 // Class concerned with the state of the game
 public class State {
-    public boolean lost;
+    public boolean playerKilled;
     public boolean paused;
     public Maze maze;
     public Scorer scorer;
@@ -32,11 +32,11 @@ public class State {
         for (int i = 0; i <= enemyCount; i++) {
             characters.add(new Character(this, i, maze.corners[i][0], maze.corners[i][1]));
         }
-        lost = false;
+        playerKilled = false;
         paused = false;
     }
     public boolean gameOver() {
-        if (lost || scorer.goalFounder != -1) {
+        if (playerKilled || scorer.goalFounder != -1) {
             return true;
         } else {
             return false;

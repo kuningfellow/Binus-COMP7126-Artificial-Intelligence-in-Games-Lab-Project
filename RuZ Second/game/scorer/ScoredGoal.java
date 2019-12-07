@@ -12,6 +12,7 @@ class ScoredGoal implements Runnable {
     public void run() {
         synchronized(state) {
             scorer.score += scorer.goalScore;
+            scorer.goalScoreAdded = true;
             state.notify();
         }
     }

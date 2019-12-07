@@ -51,7 +51,7 @@ public class Character {
         // player is killed
         if (this.id == 0) {
             this.state.maze.leaveCell(this.id, this.pos.X, this.pos.Y);
-            this.state.lost = true;
+            this.state.playerKilled = true;
         } else {
             // player is the killer
             if (killer == 0) {

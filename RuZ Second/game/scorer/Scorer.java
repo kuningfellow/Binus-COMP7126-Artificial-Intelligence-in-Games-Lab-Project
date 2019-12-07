@@ -7,11 +7,13 @@ public class Scorer {
     int score;
     int goalScore, goalScoreReductionRate;
     public int goalFounder;
+    public boolean goalScoreAdded;
     final int goalScoreReductionPeriod = 1000;
     int killScore;
     long timePhase;
     AutoReduce autoReduce;
     public Scorer(State state, int goalScore, int goalScoreReductionRate, int killScore) {
+        goalScoreAdded = false;
         score = 0;
         timePhase = 0;
         autoReduce = null;

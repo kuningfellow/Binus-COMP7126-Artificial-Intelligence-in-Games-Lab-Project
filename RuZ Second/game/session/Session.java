@@ -13,6 +13,9 @@ import game.Game;
 
 // Class for handling a single gameplay session (starting, pausing, resuming, event handling, painting)
 public class Session extends JPanel implements Runnable, KeyListener {
+    /**
+        TODO buat tampilan game
+     */
     public Game game;
     public State state;
     public Session(Game game, State state) {
@@ -32,7 +35,12 @@ public class Session extends JPanel implements Runnable, KeyListener {
             synchronized(game) {
                 synchronized(state) {
                     state.notify();
-                    if (state.gameOver()) {
+                    if (state.playerKilled ||
+                        (
+                            state.scorer.goalFounder != -1 && 
+                            (state.scorer.goalFounder != 0 || state.scorer.goalScoreAdded)
+                        )
+                    ) {
                         game.option = 0;
                         game.notify();
                         break;
