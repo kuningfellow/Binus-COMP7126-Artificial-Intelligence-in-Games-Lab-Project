@@ -45,9 +45,11 @@ public class Game implements Runnable {
                         frame.remove(gameSession);
                         frame.removeKeyListener(gameSession);
                     }
+                    frame.setVisible(true);
                     menu = new Menu(this);
                     frame.add(menu);
                     frame.addKeyListener(menu);
+                    frame.setVisible(true);
                     try {
                         this.wait();
                     } catch (Exception e) {
