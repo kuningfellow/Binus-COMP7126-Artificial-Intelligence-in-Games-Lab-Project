@@ -51,4 +51,7 @@ public class Scorer {
     public int getScore() {
         return score;
     }
+    public int treasureValue() {
+        return goalScore;
+    }
 }

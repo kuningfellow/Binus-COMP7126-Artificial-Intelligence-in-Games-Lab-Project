@@ -27,6 +27,7 @@ public class Session extends JPanel implements Runnable, KeyListener {
         p.start();
         Thread t = new Thread(this);
         t.start();
+        this.game.frame.setSize(state.maze.size * state.maze.tileSize + 200, state.maze.size * state.maze.tileSize + this.game.frame.getInsets().top);
     }
 
     // Thread to signal parent component when game is over
@@ -97,6 +98,7 @@ public class Session extends JPanel implements Runnable, KeyListener {
                 g.fillRect(j*state.maze.tileSize, i*state.maze.tileSize, state.maze.tileSize, state.maze.tileSize);
             }
         }
+        g.drawString("" + state.scorer.treasureValue(), state.maze.size * state.maze.tileSize + 20, 150);
     }
 
     @Override
