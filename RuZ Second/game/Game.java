@@ -7,26 +7,64 @@ import javax.swing.JFrame;
 
 import game.state.State;
 import game.session.Session;
+import game.menu.Menu;
 
 // Game Class
-public class Game {
-    private State state;
+public class Game implements Runnable {
+    public int option;     // -1 = menu, 0 = game over, [1-3] = difficulty
+    Menu menu;
+    Session gameSession;
+    JFrame frame;
 
+    private Session newGameSession(int difficulty) {
+        return new Session(this, new State(difficulty));
+    }
+    
     Game() {
-        JFrame frame = new JFrame("wow");
+        frame = new JFrame("RuZ Second");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 1000);
-        state = new State(1);
-        Session session = new Session(state);
-        frame.add(session);
-        frame.addKeyListener(session);
-        // frame.pack();
-        session.start();
-        frame.setVisible(true);
+        option = -1;
+        menu = null;
+        gameSession = null;
+        Thread t = new Thread(this);
+        t.start();
     }
 
-    // runner for testing
-    public static void main(String[] args) {
-        new Game();
+    public void run() {
+        while (true) {
+            synchronized(this) {
+                if (option == -1) {
+                    System.out.println("Menu");
+                    menu = new Menu(this);
+                    frame.add(menu);
+                    try {
+                        this.wait();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else if (option == 0) {
+                    option = -1;
+                } else {
+                    if (menu != null) {
+                        frame.remove(menu);
+                    }
+                    if (gameSession != null) {
+                        frame.remove(gameSession);
+                        frame.removeKeyListener(gameSession);
+                    }
+                    gameSession = newGameSession(option);
+                    frame.add(gameSession);
+                    frame.addKeyListener(gameSession);
+                    gameSession.start();
+                    frame.setVisible(true);
+                    try {
+                        this.wait();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 }

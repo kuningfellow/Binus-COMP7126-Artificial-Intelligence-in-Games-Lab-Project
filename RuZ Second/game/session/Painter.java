@@ -2,8 +2,7 @@ package game.session;
 
 import game.session.Session;
 
-// A thread to ensure locks are released regularly
-// Also performs painting
+// A thread to paint session panel on a timer
 class Painter implements Runnable {
     int num = 0;
     Session session;
@@ -19,6 +18,7 @@ class Painter implements Runnable {
                 break;
             }
             try {
+                // Screen refresh rate
                 Thread.sleep(1000/60);
             } catch (Exception e) {
                 e.printStackTrace();

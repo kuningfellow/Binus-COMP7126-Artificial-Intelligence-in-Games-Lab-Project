@@ -9,18 +9,44 @@ import java.awt.event.KeyListener;
 import javax.swing.JPanel;
 
 import game.state.State;
+import game.Game;
 
 // Class for handling a single gameplay session (starting, pausing, resuming, event handling, painting)
-public class Session extends JPanel implements KeyListener {
+public class Session extends JPanel implements Runnable, KeyListener {
+    public Game game;
     public State state;
-    public Session(State state) {
+    public Session(Game game, State state) {
+        this.game = game;
         this.state = state;
         Thread r = new Thread(new Releaser(this));
         Thread p = new Thread(new Painter(this));
         r.start();
         p.start();
+        Thread t = new Thread(this);
+        t.start();
     }
 
+    // Thread to signal parent component when game is over
+    public void run() {
+        while (true) {
+            synchronized(game) {
+                synchronized(state) {
+                    state.notify();
+                    if (state.gameOver()) {
+                        game.option = 0;
+                        game.notify();
+                        break;
+                    }
+                    try {
+                        state.wait();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+    
     public void start() {
         resume();
     }
