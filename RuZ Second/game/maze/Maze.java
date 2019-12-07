@@ -1,41 +1,34 @@
-package game;
+package game.maze;
 
 import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
 
-import game.GameState;
+import game.state.State;
 
 public class Maze {
-    GameState state;
+    State state;
     // 0 based indexing
-    int mazeSize, tileSize;
-    int[][] cell;           // 0 if wall, 1 if floor
-    int[][] visitor;        // stores bitmask of characters in a cell
+    public int size, tileSize;
+    public int[][] cell;           // 0 if wall, 1 if floor
+    public int[][] visitor;        // stores bitmask of characters in a cell
     public int[][] corners;        // stores 4 corners of the maze
-    Maze(GameState state, int mazeSize, int tileSize) {
+    public Maze(State state, int size, int tileSize) {
         this.state = state;
-        this.mazeSize = mazeSize;
+        this.size = size;
         this.tileSize = tileSize;
-        cell = new int[mazeSize][mazeSize];
-        visitor = new int[mazeSize][mazeSize];
+        cell = new int[size][size];
+        visitor = new int[size][size];
         corners = new int[4][2];
         corners[0][0] = 1;
         corners[0][1] = 1;
         corners[1][0] = 1;
-        corners[1][1] = mazeSize-2;
-        corners[2][0] = mazeSize-2;
+        corners[1][1] = size-2;
+        corners[2][0] = size-2;
         corners[2][1] = 1;
-        corners[3][0] = mazeSize-2;
-        corners[3][1] = mazeSize-2;
+        corners[3][0] = size-2;
+        corners[3][1] = size-2;
         generate();
-    }
-    boolean insideMaze(int x, int y) {
-        if (x > 0 && x < this.mazeSize-1 && y > 0 && y < this.mazeSize-1) {
-            return true;
-        } else {
-            return false;
-        }
     }
     public boolean isFloor(int x, int y) {
         if (!insideMaze(x, y)) {
@@ -46,37 +39,12 @@ public class Maze {
             return false;
         }
     }
-    boolean cellVisited(int x, int y) {
-        if (x == this.mazeSize/2 && y == this.mazeSize/2) {
-            return false;       // Center room can have multiple branches
-        } else if (insideMaze(x, y) && this.cell[x][y] == 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    void print() {
-        int[][] visit = new int[this.mazeSize][this.mazeSize];
-        for (int i = 0; i < this.mazeSize; i++) {
-            for (int j = 0; j < this.mazeSize; j++) {
-                if (this.visitor[i][j] == 1) {
-                    System.out.printf("P");
-                } else if (this.visitor[i][j] > 0) {
-                    System.out.printf("O");
-                } else if (this.cell[i][j] == 1) {
-                    System.out.printf(" ");
-                } else {
-                    System.out.printf("#");
-                }
-            }
-            System.out.println("");
-        }
-    }
     public void enterCell(int id, int x, int y) {
         this.visitor[x][y] |= 1 << id;
-        if (x == this.mazeSize/2 && y == this.mazeSize/2) {
+        if (x == this.size/2 && y == this.size/2) {
             state.scorer.goalFounder = id;
             if (id == 0) {
+                // If player gets the treasure, add treasure value to total score
                 state.scorer.scoredGoal();
             }
         } else {
@@ -101,6 +69,52 @@ public class Maze {
             }
         }
         return -1;
+    }
+    public String getTileColor(int x, int y) {
+        if (this.visitor[x][y] == 1) {
+            return "player";
+        } else if (this.visitor[x][y] > 0) {
+            return "enemy";
+        } else if (x == size/2 && y == size/2) {
+            return "goal";
+        } else if (this.cell[x][y] == 1) {
+            return "floor";
+        } else {
+            return "wall";
+        }
+    }
+    public void print() {
+        int[][] visit = new int[this.size][this.size];
+        for (int i = 0; i < this.size; i++) {
+            for (int j = 0; j < this.size; j++) {
+                if (this.visitor[i][j] == 1) {
+                    System.out.printf("P");
+                } else if (this.visitor[i][j] > 0) {
+                    System.out.printf("O");
+                } else if (this.cell[i][j] == 1) {
+                    System.out.printf(" ");
+                } else {
+                    System.out.printf("#");
+                }
+            }
+            System.out.println("");
+        }
+    }
+    boolean insideMaze(int x, int y) {
+        if (x > 0 && x < this.size-1 && y > 0 && y < this.size-1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    boolean cellVisited(int x, int y) {
+        if (x == this.size/2 && y == this.size/2) {
+            return false;       // Center room can have multiple branches
+        } else if (insideMaze(x, y) && this.cell[x][y] == 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
     List<Integer> getBranchingOrder() {
         Integer[] arr = {0, 1, 2, 3};
@@ -141,6 +155,6 @@ public class Maze {
         }
     }
     void generate() {
-        dfs(mazeSize/2, mazeSize/2, 0);     // Start at center of maze (as requested)
+        dfs(size/2, size/2, 0);     // Start at center of maze (as requested)
     }
 }

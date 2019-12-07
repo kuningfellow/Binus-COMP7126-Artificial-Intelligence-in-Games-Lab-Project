@@ -1,16 +1,15 @@
 package game.character;
 
-import game.GameState;
+import game.state.State;
 
 class AutoMove implements Runnable {
-    GameState state;
+    State state;
     Character character;
     long startTime;
     long pendingSleep;
     volatile boolean dead = false;
 
-    // character being moved, start time of thread
-    AutoMove(GameState state, Character character, long startTime, long pendingSleep) {
+    AutoMove(State state, Character character, long startTime, long pendingSleep) {
         this.state = state;
         this.character = character;
         this.startTime = startTime;
@@ -27,9 +26,7 @@ class AutoMove implements Runnable {
         }
         while (!dead && !state.gameOver()) {
             synchronized(state) {
-                /**
-                    Do some automatic character movement
-                */
+                // Do some automatic character movement
                 character.botMove();
                 state.notify();
                 try {

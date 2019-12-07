@@ -1,15 +1,15 @@
 package game.scorer;
 
-import game.GameState;
+import game.state.State;
 
 class AutoReduce implements Runnable {
-    GameState state;
+    State state;
     Scorer scorer;
     long startTime;
     long pendingSleep;
     volatile boolean dead = false;
 
-    AutoReduce(GameState state, Scorer scorer, long startTime, long pendingSleep) {
+    AutoReduce(State state, Scorer scorer, long startTime, long pendingSleep) {
         this.state = state;
         this.scorer = scorer;
         this.startTime = startTime;

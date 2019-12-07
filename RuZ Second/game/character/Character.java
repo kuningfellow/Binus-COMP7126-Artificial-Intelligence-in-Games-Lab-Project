@@ -1,15 +1,15 @@
 package game.character;
 
-import game.GameState;
+import game.state.State;
 
 public class Character {
-    GameState state;
+    State state;
     AutoMove autoMove;
     int id;
     int dir;
     Position pos;
     long timePhase;
-    public Character(GameState state, int id, int x, int y) {
+    public Character(State state, int id, int x, int y) {
         this.state = state;
         this.id = id;
         this.pos = new Position(x, y);
@@ -63,6 +63,8 @@ public class Character {
             this.pos.X = this.state.maze.corners[corner][0];
             this.pos.Y = this.state.maze.corners[corner][1];
             this.state.maze.enterCell(this.id, this.pos.X, this.pos.Y);
+            // Reset character clock when killed
+            timePhase = 0;
             resumeAutoMove();
         }
     }
@@ -86,6 +88,17 @@ public class Character {
         if (this.state.paused == false) {
             Thread t = new Thread(new Move(this.state, this, dir));
             t.start();
+        }
+    }
+    public void manualMove(String dir) {
+        if (dir.equals("UP")) {
+            manualMove(2);
+        } else if (dir.equals("DOWN")) {
+            manualMove(0);
+        } else if (dir.equals("LEFT")) {
+            manualMove(3);
+        } else if (dir.equals("RIGHT")) {
+            manualMove(1);
         }
     }
 }

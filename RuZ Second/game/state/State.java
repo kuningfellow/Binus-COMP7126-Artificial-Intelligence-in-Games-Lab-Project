@@ -1,20 +1,21 @@
-package game;
+package game.state;
 
 import java.util.Vector;
 
 import game.character.Character;
 import game.scorer.Scorer;
+import game.maze.Maze;
 
 // Class concerned with the state of the game
-public class GameState {
+public class State {
     public boolean lost;
     public boolean paused;
     public Maze maze;
     public Scorer scorer;
-    Vector<Character> characters = new Vector<Character>();
-    final int enemyCount = 3;
+    public Vector<Character> characters = new Vector<Character>();
+    public final int enemyCount = 3;
     public int enemyMoveCooldown;
-    GameState(int x) {
+    public State(int x) {
         if (x == 1) {           // Easy
             maze = new Maze(this, 15, 40);
             enemyMoveCooldown = 600;

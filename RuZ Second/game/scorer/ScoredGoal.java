@@ -1,11 +1,11 @@
 package game.scorer;
 
-import game.GameState;
+import game.state.State;
 
 class ScoredGoal implements Runnable {
-    GameState state;
+    State state;
     Scorer scorer;
-    ScoredGoal(GameState state, Scorer scorer) {
+    ScoredGoal(State state, Scorer scorer) {
         this.state = state;
         this.scorer = scorer;
     }

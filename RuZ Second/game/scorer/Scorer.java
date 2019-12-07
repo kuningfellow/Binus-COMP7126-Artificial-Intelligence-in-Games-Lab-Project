@@ -1,9 +1,9 @@
 package game.scorer;
 
-import game.GameState;
+import game.state.State;
 
 public class Scorer {
-    GameState state;
+    State state;
     int score;
     int goalScore, goalScoreReductionRate;
     public int goalFounder;
@@ -11,7 +11,7 @@ public class Scorer {
     int killScore;
     long timePhase;
     AutoReduce autoReduce;
-    public Scorer(GameState state, int goalScore, int goalScoreReductionRate, int killScore) {
+    public Scorer(State state, int goalScore, int goalScoreReductionRate, int killScore) {
         score = 0;
         timePhase = 0;
         autoReduce = null;
