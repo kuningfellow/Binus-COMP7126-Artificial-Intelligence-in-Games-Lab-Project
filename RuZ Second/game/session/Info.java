@@ -6,13 +6,22 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import java.io.InputStream;
+
 import game.session.Session;
 
 // Class for showing information on game session
 public class Info extends JPanel {
     Session session;
+    Font rogFont;
     public Info(Session session) {
         this.session = session;
+        try {
+            InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("game/assets/ROGFontsv1.6-Regular.ttf");
+            rogFont = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(Font.ITALIC, 52f);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initialize() {
@@ -21,8 +30,11 @@ public class Info extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        Font font = new Font ("Roboto", Font.PLAIN, 22);
-        int paddingT = 20;
+        g.setFont(rogFont);
+        g.drawString("RuZ", 60, 50);
+        g.drawString("Second", 30, 80);
+        Font font = new Font("Roboto", Font.PLAIN, 22);
+        int paddingT = 120;
         int paddingL = 20;
         int dist = 50;
         g.setFont(font);

@@ -2,7 +2,6 @@ package game.session;
 
 import java.awt.Font;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -23,7 +22,6 @@ public class Session extends JPanel implements Runnable, KeyListener {
     public State state;
     Screen screen;
     JPanel panel;
-    Logo logo;
     Info info;
     PauseButton pauseButton;
 
@@ -33,7 +31,6 @@ public class Session extends JPanel implements Runnable, KeyListener {
         this.state = state;
         this.screen = new Screen(this);
         this.panel = new JPanel();
-        this.logo = new Logo(this, 70);
         this.info = new Info(this);
         this.pauseButton= new PauseButton(this);
         
@@ -43,16 +40,12 @@ public class Session extends JPanel implements Runnable, KeyListener {
         panel.setLayout(new GridBagLayout());
         this.setLayout(new GridBagLayout());
 
-        // add logo to side panel
-        c.gridx = 0; c.gridy = 0; c.ipadx = logo.width; c.ipady = logo.getLogoHeight() + 10;
-        panel.add(logo, c);
-
         // add info to side panel
-        c.gridx = 0; c.gridy = 1; c.ipadx = 230; c.ipady = state.maze.size * state.maze.tileSize - logo.getLogoHeight() - 100;
+        c.gridx = 0; c.gridy = 0; c.ipadx = 230; c.ipady = state.maze.size * state.maze.tileSize - 80;
         panel.add(info, c);
 
         // add pause button to side panel
-        c.gridy = 2; c.ipadx = 0; c.ipady = 50;
+        c.gridy = 1; c.ipadx = 0; c.ipady = 50;
         panel.add(pauseButton, c);
 
         // add game screen to session panel
@@ -117,7 +110,6 @@ public class Session extends JPanel implements Runnable, KeyListener {
     }
 
     private void initialize() {
-        setPreferredSize(new Dimension(800, 800));
         setBackground(Color.cyan);
     }
 

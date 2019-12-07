@@ -1,56 +1,69 @@
 package game.menu;
 
+import java.awt.Font;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
 
-import java.util.Scanner;
 import javax.swing.JPanel;
+import javax.swing.JButton;
+import java.io.InputStream;
 
 import game.Game;
 
 // Class for game menu
-public class Menu extends JPanel implements KeyListener {
-    /**
-        TODO buat tampilan menu
-     */
+public class Menu extends JPanel {
     Game game;
-    Scanner in = new Scanner(System.in);
+    Font rogFont;
+    Title title;
+    JPanel buttons;
+    JButton easyButton, mediumButton, hardButton;
     public Menu(Game game) {
         this.game = game;
-    }
-
-    private void initialize() {
-        setPreferredSize(new Dimension(800, 800));
-        setBackground(Color.cyan);
-    }
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-    }
-
-    @Override
-    public void keyPressed(KeyEvent arg0) {
-        int key = arg0.getKeyCode();
-        synchronized(game) {
-            if (key == KeyEvent.VK_1) {
-                game.option = 1;
-            } else if (key == KeyEvent.VK_2) {
-                game.option = 2;
-            } else if (key == KeyEvent.VK_3) {
-                game.option = 3;
+        title = new Title();
+        buttons = new JPanel();
+        easyButton = new JButton("Easy");
+        mediumButton = new JButton("Medium");
+        hardButton = new JButton("Hard");
+        buttons.add(easyButton);
+        buttons.add(mediumButton);
+        buttons.add(hardButton);
+        this.easyButton.setFocusable(false);
+        this.mediumButton.setFocusable(false);
+        this.hardButton.setFocusable(false);
+        easyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                synchronized(game) {
+                    game.option = 1;
+                    game.notify();
+                }
             }
-            if (game.option != -1) {
-                game.notify();
+        });
+        mediumButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                synchronized(game) {
+                    game.option = 2;
+                    game.notify();
+                }
             }
-        }
+        });
+        hardButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                synchronized(game) {
+                    game.option = 3;
+                    game.notify();
+                }
+            }
+        });
+
+        this.game.frame.setSize(800, 600);
+        this.setLayout(new GridLayout(2, 1));
+        this.add(title);
+        this.add(buttons);
+        this.game.frame.add(this);
+        this.game.frame.setVisible(true);
     }
-    @Override
-    public void keyReleased(KeyEvent arg0) {
-    }
-    @Override
-    public void keyTyped(KeyEvent arg0) {
-	}
 }

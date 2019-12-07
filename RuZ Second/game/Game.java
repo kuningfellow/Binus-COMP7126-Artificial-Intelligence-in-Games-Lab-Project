@@ -24,7 +24,8 @@ public class Game implements Runnable {
     Game() {
         frame = new JFrame("RuZ Second");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000, 1000);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
         option = -1;
         menu = null;
         gameSession = null;
@@ -39,7 +40,6 @@ public class Game implements Runnable {
                 if (option == -1) {
                     if (menu != null) {
                         frame.remove(menu);
-                        frame.removeKeyListener(menu);
                     }
                     if (gameSession != null) {
                         frame.remove(gameSession);
@@ -48,7 +48,6 @@ public class Game implements Runnable {
                     frame.setVisible(true);
                     menu = new Menu(this);
                     frame.add(menu);
-                    frame.addKeyListener(menu);
                     frame.setVisible(true);
                     try {
                         this.wait();
@@ -80,7 +79,6 @@ public class Game implements Runnable {
                 } else {
                     if (menu != null) {
                         frame.remove(menu);
-                        frame.removeKeyListener(menu);
                     }
                     if (gameSession != null) {
                         frame.remove(gameSession);
