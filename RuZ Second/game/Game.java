@@ -29,6 +29,7 @@ public class Game implements Runnable {
         gameSession = null;
         Thread t = new Thread(this);
         t.start();
+        frame.setVisible(true);
     }
 
     public void run() {
@@ -38,6 +39,7 @@ public class Game implements Runnable {
                     System.out.println("Menu");
                     menu = new Menu(this);
                     frame.add(menu);
+                    frame.addKeyListener(menu);
                     try {
                         this.wait();
                     } catch (Exception e) {
@@ -48,6 +50,7 @@ public class Game implements Runnable {
                 } else {
                     if (menu != null) {
                         frame.remove(menu);
+                        frame.removeKeyListener(menu);
                     }
                     if (gameSession != null) {
                         frame.remove(gameSession);
