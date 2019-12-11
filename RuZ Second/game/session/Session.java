@@ -56,9 +56,7 @@ public class Session extends JPanel implements Runnable, KeyListener {
         c.gridx = 1; c.ipadx = c.ipady = 0;
         this.add(panel, c);
     
-        Thread r = new Thread(new Releaser(this));
         Thread p = new Thread(new Painter(this));
-        r.start();
         p.start();
         Thread t = new Thread(this);
         t.start();
@@ -69,7 +67,6 @@ public class Session extends JPanel implements Runnable, KeyListener {
         while (true) {
             synchronized(game) {
                 synchronized(state) {
-                    state.notify();
                     // make sure if player scores goal, the goal thread completes
                     if (state.playerKilled ||
                         (

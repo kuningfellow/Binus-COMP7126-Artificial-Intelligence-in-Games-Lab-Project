@@ -29,11 +29,6 @@ class AutoMove implements Runnable {
                 // Do some automatic character movement
                 character.botMove();
                 state.notify();
-                try {
-                    state.wait();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
 
             // Wait for a period before an enemy can move
