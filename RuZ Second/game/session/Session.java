@@ -121,10 +121,6 @@ public class Session extends JPanel implements Runnable, KeyListener {
             state.characters.get(0).manualMove("UP");
         } else if (key == KeyEvent.VK_DOWN) {
             state.characters.get(0).manualMove("DOWN");
-        } else if (key == KeyEvent.VK_P) {
-            pause();
-        } else if (key == KeyEvent.VK_R) {
-            resume();
         }
     }
     @Override

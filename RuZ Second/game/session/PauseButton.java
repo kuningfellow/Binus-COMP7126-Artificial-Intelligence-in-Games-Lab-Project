@@ -28,7 +28,7 @@ public class PauseButton extends JPanel {
                     pauseButton.setText("Pause");
                 } else {
                     session.pause();
-                    pauseButton.setText("Resume");
+                    pauseButton.setText("Continue");
                 }
             }
         });
